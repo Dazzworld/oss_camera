@@ -27,13 +27,18 @@
  *
  */
 
-#include <ctype.h>
+// To remove
 #include <cutils/properties.h>
-#include <fcntl.h>
-#include <dlfcn.h>
-#include <linux/msm_ion.h>
-#include <sys/mman.h>
 
+// System dependencies
+#include <dlfcn.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <linux/msm_ion.h>
+#define MMAN_H <SYSTEM_HEADER_PREFIX/mman.h>
+#include MMAN_H
+
+// Camera dependencies
 #include "mm_qcamera_dbg.h"
 #include "mm_qcamera_app.h"
 

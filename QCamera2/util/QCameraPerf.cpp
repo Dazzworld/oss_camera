@@ -29,11 +29,20 @@
 
 #define LOG_TAG "QCameraPerf"
 
+// To remove
 #include <cutils/properties.h>
+
+// System dependencies
 #include <stdlib.h>
-#include <utils/Log.h>
+#include <dlfcn.h>
+
+// Camera dependencies
 #include "QCameraPerf.h"
 #include "QCameraTrace.h"
+
+extern "C" {
+#include "mm_camera_dbg.h"
+}
 
 namespace qcamera {
 
