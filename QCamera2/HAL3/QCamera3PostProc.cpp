@@ -1865,7 +1865,7 @@ void *QCamera3PostProcessor::dataProcessRoutine(void *data)
                         } else if (meta_buffer == NULL) {
                             LOGE("no mem for mm_camera_super_buf_t");
                             ret = -1;
-                        } else {
+                        } else if (pp_buffer != NULL){
                             memset(pp_job, 0, sizeof(qcamera_hal3_pp_data_t));
                             pp_job->src_frame = pp_buffer->input;
                             pp_job->src_metadata = meta_buffer;
@@ -2716,6 +2716,7 @@ int32_t QCamera3Exif::addEntry(exif_tag_id_t tagid,
             break;
         case EXIF_SHORT:
             {
+                uint16_t *exif_data = (uint16_t *)data;
                 if (count > 1) {
                     uint16_t *values =
                         (uint16_t *)malloc(count * sizeof(uint16_t));
@@ -2723,8 +2724,8 @@ int32_t QCamera3Exif::addEntry(exif_tag_id_t tagid,
                         LOGE("No memory for short array");
                         rc = NO_MEMORY;
                     } else {
-                        memcpy(values, data, count * sizeof(uint16_t));
-                        m_Entries[m_nNumEntries].tag_entry.data._shorts =values;
+                        memcpy(values, exif_data, count * sizeof(uint16_t));
+                        m_Entries[m_nNumEntries].tag_entry.data._shorts = values;
                     }
                 } else {
                     m_Entries[m_nNumEntries].tag_entry.data._short =
@@ -2734,6 +2735,7 @@ int32_t QCamera3Exif::addEntry(exif_tag_id_t tagid,
             break;
         case EXIF_LONG:
             {
+                uint32_t *exif_data = (uint32_t *)data;
                 if (count > 1) {
                     uint32_t *values =
                         (uint32_t *)malloc(count * sizeof(uint32_t));
@@ -2741,7 +2743,7 @@ int32_t QCamera3Exif::addEntry(exif_tag_id_t tagid,
                         LOGE("No memory for long array");
                         rc = NO_MEMORY;
                     } else {
-                        memcpy(values, data, count * sizeof(uint32_t));
+                        memcpy(values, exif_data, count * sizeof(uint32_t));
                         m_Entries[m_nNumEntries].tag_entry.data._longs = values;
                     }
                 } else {
@@ -2752,13 +2754,14 @@ int32_t QCamera3Exif::addEntry(exif_tag_id_t tagid,
             break;
         case EXIF_RATIONAL:
             {
+                rat_t *exif_data = (rat_t *)data;
                 if (count > 1) {
                     rat_t *values = (rat_t *)malloc(count * sizeof(rat_t));
                     if (values == NULL) {
                         LOGE("No memory for rational array");
                         rc = NO_MEMORY;
                     } else {
-                        memcpy(values, data, count * sizeof(rat_t));
+                        memcpy(values, exif_data, count * sizeof(rat_t));
                         m_Entries[m_nNumEntries].tag_entry.data._rats = values;
                     }
                 } else {
@@ -2781,6 +2784,7 @@ int32_t QCamera3Exif::addEntry(exif_tag_id_t tagid,
             break;
         case EXIF_SLONG:
             {
+                int32_t *exif_data = (int32_t *)data;
                 if (count > 1) {
                     int32_t *values =
                         (int32_t *)malloc(count * sizeof(int32_t));
@@ -2788,7 +2792,7 @@ int32_t QCamera3Exif::addEntry(exif_tag_id_t tagid,
                         LOGE("No memory for signed long array");
                         rc = NO_MEMORY;
                     } else {
-                        memcpy(values, data, count * sizeof(int32_t));
+                        memcpy(values, exif_data, count * sizeof(int32_t));
                         m_Entries[m_nNumEntries].tag_entry.data._slongs =values;
                     }
                 } else {
@@ -2799,13 +2803,14 @@ int32_t QCamera3Exif::addEntry(exif_tag_id_t tagid,
             break;
         case EXIF_SRATIONAL:
             {
+                srat_t *exif_data = (srat_t *)data;
                 if (count > 1) {
                     srat_t *values = (srat_t *)malloc(count * sizeof(srat_t));
                     if (values == NULL) {
                         LOGE("No memory for sign rational array");
                         rc = NO_MEMORY;
                     } else {
-                        memcpy(values, data, count * sizeof(srat_t));
+                        memcpy(values, exif_data, count * sizeof(srat_t));
                         m_Entries[m_nNumEntries].tag_entry.data._srats = values;
                     }
                 } else {

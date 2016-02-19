@@ -336,7 +336,7 @@ int process_sensor_data(cam_sensor_params_t *p_sensor_params,
   } else {
     flash_fired = 0;
   }
-  LOGD("Flash value %d flash mode %d flash state %d", val_short,
+  LOGD("Flash mode %d flash state %d",
     p_sensor_params->flash_mode, p_sensor_params->flash_state);
 
   switch(p_sensor_params->flash_mode) {
