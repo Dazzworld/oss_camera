@@ -533,11 +533,6 @@ int QCamera2HardwareInterface::start_recording(struct camera_device *device)
     hw->m_bRecordStarted = true;
     LOGI("[KPI Perf]: X ret = %d", ret);
 
-    if (ret == NO_ERROR) {
-        // Set power Hint for video encoding
-        hw->m_perfLock.powerHint(POWER_HINT_VIDEO_ENCODE, true);
-    }
-
     return ret;
 }
 
@@ -562,9 +557,6 @@ void QCamera2HardwareInterface::stop_recording(struct camera_device *device)
     }
     LOGI("[KPI Perf]: E PROFILE_STOP_RECORDING camera id %d",
              hw->getCameraId());
-
-    // Disable power hint for video encoding
-    hw->m_perfLock.powerHint(POWER_HINT_VIDEO_ENCODE, false);
 
     hw->lockAPI();
     qcamera_api_result_t apiResult;
@@ -3151,6 +3143,11 @@ int QCamera2HardwareInterface::startRecording()
         rc = pChannel->start();
     }
 
+    if (rc == NO_ERROR) {
+        // Set power Hint for video encoding
+        m_perfLock.powerHint(POWER_HINT_VIDEO_ENCODE, true);
+    }
+
     LOGI("X rc = %d", rc);
     return rc;
 }
@@ -3175,6 +3172,9 @@ int QCamera2HardwareInterface::stopRecording()
         stopChannel(QCAMERA_CH_TYPE_SNAPSHOT);
     }
     int rc = stopChannel(QCAMERA_CH_TYPE_VIDEO);
+
+    // Disable power hint for video encoding
+    m_perfLock.powerHint(POWER_HINT_VIDEO_ENCODE, false);
 
     LOGI("X rc = %d", rc);
     return rc;
