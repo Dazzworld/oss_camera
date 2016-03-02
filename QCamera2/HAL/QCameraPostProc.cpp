@@ -574,7 +574,6 @@ int32_t QCameraPostProcessor::getJpegEncodingConfig(mm_jpeg_encode_params_t& enc
             dst_dim.width, dst_dim.height);
 
     if (m_bThumbnailNeeded == TRUE) {
-        uint32_t jpeg_rotation = m_parent->mParameters.getJpegRotation();
         m_parent->getThumbnailSize(encode_parm.thumb_dim.dst_dim);
 
         if (thumb_stream == NULL) {
@@ -838,7 +837,6 @@ bool QCameraPostProcessor::validatePostProcess(mm_camera_super_buf_t *frame)
 int32_t QCameraPostProcessor::processData(mm_camera_super_buf_t *frame)
 {
     bool triggerEvent = TRUE;
-    QCameraChannel *m_pReprocChannel = NULL;
 
     if (m_bInited == FALSE) {
         LOGE("postproc not initialized yet");
@@ -2852,7 +2850,6 @@ int32_t QCameraPostProcessor::doReprocess()
     QCameraStream *pMetaStream = NULL;
     uint8_t meta_buf_index = 0;
     mm_camera_buf_def_t *meta_buf = NULL;
-    bool found_meta = FALSE;
 
     qcamera_pp_request_t *ppreq_job = (qcamera_pp_request_t *)m_inputPPQ.peek();
     if ((ppreq_job == NULL) || (ppreq_job->src_frame == NULL)) {
@@ -2876,17 +2873,13 @@ int32_t QCameraPostProcessor::doReprocess()
     LOGD("frame = %p src_frame = %p mCurReprocCount = %d",
             src_frame,src_reproc_frame,mCurReprocCount);
 
-    if (mPPChannelCount >= CAM_PP_CHANNEL_MAX) {
-        LOGE("invalid channel count");
-        return UNKNOWN_ERROR;
-    }
-
     // find meta data stream and index of meta data frame in the superbuf
     for (int8_t j = 0; j < mTotalNumReproc; j++) {
+        uint32_t i;
         m_pSrcChannel = mPPChannels[j]->getSrcChannel();
         if (m_pSrcChannel == NULL)
             continue;
-        for (uint32_t i = 0; i < src_reproc_frame->num_bufs; i++) {
+        for (i = 0; i < src_reproc_frame->num_bufs; i++) {
             QCameraStream *pStream =
                     m_pSrcChannel->getStreamByHandle(src_reproc_frame->bufs[i]->stream_id);
             if (pStream != NULL && pStream->isTypeOf(CAM_STREAM_TYPE_METADATA)) {
