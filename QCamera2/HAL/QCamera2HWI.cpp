@@ -1255,7 +1255,8 @@ QCamera2HardwareInterface::QCamera2HardwareInterface(uint32_t cameraId)
       mJpegClientHandle(0),
       mJpegHandleOwner(false),
       mMetadataMem(NULL),
-      mCACDoneReceived(false)
+      mCACDoneReceived(false),
+      mBootToMonoTimestampOffset(0)
 {
 #ifdef TARGET_TS_MAKEUP
     memset(&mFaceRect, -1, sizeof(mFaceRect));
@@ -1543,6 +1544,23 @@ int QCamera2HardwareInterface::openCamera()
         }
         pthread_mutex_unlock(&gCamLock);
     }
+
+    // Setprop to decide the time source (whether boottime or monotonic).
+    // By default, use monotonic time.
+    property_get("persist.camera.time.monotonic", value, "1");
+    mBootToMonoTimestampOffset = 0;
+    if (atoi(value) == 1) {
+        // if monotonic is set, then need to use time in monotonic.
+        // So, Measure the clock offset between BOOTTIME and MONOTONIC
+        // The clock domain source for ISP is BOOTTIME and
+        // for Video/display is MONOTONIC
+        // The below offset is used to convert from clock domain of other subsystem
+        // (video/hardware composer) to that of camera. Assumption is that this
+        // offset won't change during the life cycle of the camera device. In other
+        // words, camera device shouldn't be open during CPU suspend.
+        mBootToMonoTimestampOffset = getBootToMonoTimeOffset();
+    }
+    LOGH("mBootToMonoTimestampOffset = %lld", mBootToMonoTimestampOffset);
 
     return NO_ERROR;
 
@@ -9257,6 +9275,37 @@ void QCamera2HardwareInterface::getLogLevel()
 cam_sensor_t QCamera2HardwareInterface::getSensorType()
 {
     return gCamCapability[mCameraId]->sensor_type.sens_type;
+}
+
+/*===========================================================================
+ * FUNCTION   : getBootToMonoTimeOffset
+ *
+ * DESCRIPTION: Calculate offset that is used to convert from
+ *              clock domain of boot to monotonic
+ *
+ * PARAMETERS :
+ *   None
+ *
+ * RETURN     : clock offset between boottime and monotonic time.
+ *
+ *==========================================================================*/
+nsecs_t QCamera2HardwareInterface::getBootToMonoTimeOffset()
+{
+    // try three times to get the clock offset, choose the one
+    // with the minimum gap in measurements.
+    const int tries = 3;
+    nsecs_t bestGap, measured;
+    for (int i = 0; i < tries; ++i) {
+        const nsecs_t tmono = systemTime(SYSTEM_TIME_MONOTONIC);
+        const nsecs_t tbase = systemTime(SYSTEM_TIME_BOOTTIME);
+        const nsecs_t tmono2 = systemTime(SYSTEM_TIME_MONOTONIC);
+        const nsecs_t gap = tmono2 - tmono;
+        if (i == 0 || gap < bestGap) {
+            bestGap = gap;
+            measured = tbase - ((tmono + tmono2) >> 1);
+        }
+    }
+    return measured;
 }
 
 }; // namespace qcamera
