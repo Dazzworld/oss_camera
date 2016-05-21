@@ -36,8 +36,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "gralloc.h"
 #include <sys/stat.h>
+#include "hardware/gralloc.h"
+#include <utils/Timers.h>
 
 // Camera dependencies
 #include "QCamera3Channel.h"
