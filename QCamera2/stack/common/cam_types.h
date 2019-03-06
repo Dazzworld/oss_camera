@@ -1962,9 +1962,6 @@ typedef enum {
     CAM_INTF_META_LOW_LIGHT,
     /* dynamic feature detection */
     CAM_INTF_META_IMG_DYN_FEAT,
-    /*Parameter entry to communicate manual
-    capture type*/
-    CAM_INTF_PARM_MANUAL_CAPTURE_TYPE,
     CAM_INTF_PARM_MAX    /*200*/
 } cam_intf_parm_type_t;
 
