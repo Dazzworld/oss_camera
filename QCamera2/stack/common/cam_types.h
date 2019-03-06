@@ -1965,9 +1965,7 @@ typedef enum {
     /*Parameter entry to communicate manual
     capture type*/
     CAM_INTF_PARM_MANUAL_CAPTURE_TYPE,
-    /*AF state change detected by AF module*/
-    CAM_INTF_AF_STATE_TRANSITION,
-    CAM_INTF_PARM_MAX /* 201 */
+    CAM_INTF_PARM_MAX    /*200*/
 } cam_intf_parm_type_t;
 
 typedef struct {
