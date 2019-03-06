@@ -549,14 +549,6 @@ typedef struct{
 
     /* Dual cam calibration data */
     cam_related_system_calibration_data_t related_cam_calibration;
-
-    /* Meta_RAW capability */
-    uint8_t meta_raw_channel_count;
-    uint8_t vc[MAX_SIZES_CNT];
-    uint8_t dt[MAX_SIZES_CNT];
-    cam_format_t supported_meta_raw_fmts[CAM_FORMAT_MAX];
-    cam_dimension_t raw_meta_dim[MAX_SIZES_CNT];
-    cam_sub_format_type_t sub_fmt[CAM_FORMAT_SUBTYPE_MAX];
 } cam_capability_t;
 
 typedef enum {
@@ -672,16 +664,6 @@ typedef struct {
 
     /* if frames will not be received */
     uint8_t noFrameExpected;
-
-    /* DT for this stream */
-    int32_t dt;
-
-    /* VC for this stream */
-    int32_t vc;
-
-   /* Subformat for this stream */
-    cam_sub_format_type_t sub_format_type;
-
 } cam_stream_info_t;
 
 /*****************************************************************************
@@ -955,9 +937,6 @@ typedef struct {
     INCLUDE(CAM_INTF_PARM_DUAL_LED_CALIBRATION,         int32_t,                     1);
     INCLUDE(CAM_INTF_PARM_ADV_CAPTURE_MODE,             uint8_t,                     1);
     INCLUDE(CAM_INTF_PARM_QUADRA_CFA,                   int32_t,                     1);
-    INCLUDE(CAM_INTF_META_RAW,                          cam_dimension_t,             1);
-    INCLUDE(CAM_INTF_META_STREAM_INFO_FOR_PIC_RES,      cam_stream_size_info_t,      1);
-
 
     /* HAL3 specific */
     INCLUDE(CAM_INTF_META_STREAM_INFO,                  cam_stream_size_info_t,      1);

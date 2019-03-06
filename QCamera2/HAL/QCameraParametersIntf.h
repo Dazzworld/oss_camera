@@ -87,11 +87,6 @@ public:
             cam_dimension_t &dim);
     int32_t getStreamFormat(cam_stream_type_t streamType,
             cam_format_t &format);
-
-    int32_t getStreamSubFormat(
-      cam_stream_type_t streamType, cam_sub_format_type_t &sub_format);
-
-
     int32_t getStreamDimension(cam_stream_type_t streamType,
             cam_dimension_t &dim);
 
@@ -308,8 +303,6 @@ public:
         bool hal3,
         cam_feature_mask_t featureMask,
         cam_analysis_info_t *pAnalysisInfo);
-    int32_t updateDtVc(int32_t *dt, int32_t *vc);
-
 private:
     QCameraParameters *mImpl;
     mutable Mutex mLock;
