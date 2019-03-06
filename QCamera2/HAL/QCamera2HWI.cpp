@@ -1667,8 +1667,7 @@ QCamera2HardwareInterface::QCamera2HardwareInterface(uint32_t cameraId)
       mMetadataMem(NULL),
       mCACDoneReceived(false),
       m_bNeedRestart(false),
-      mBootToMonoTimestampOffset(0),
-      bDepthAFCallbacks(true)
+      mBootToMonoTimestampOffset(0)
 {
 #ifdef TARGET_TS_MAKEUP
     memset(&mFaceRect, -1, sizeof(mFaceRect));
@@ -1975,10 +1974,6 @@ int QCamera2HardwareInterface::openCamera()
         mBootToMonoTimestampOffset = QCameraCommon::getBootToMonoTimeOffset();
     }
     LOGH("mBootToMonoTimestampOffset = %lld", mBootToMonoTimestampOffset);
-
-    memset(value, 0, sizeof(value));
-    property_get("persist.camera.depth.focus.cb", value, "1");
-    bDepthAFCallbacks = atoi(value);
 
     return NO_ERROR;
 
@@ -6241,8 +6236,8 @@ int32_t QCamera2HardwareInterface::processAutoFocusEvent(cam_auto_focus_data_t &
         return ret;
     }
     cam_focus_mode_type focusMode = mParameters.getFocusMode();
-    LOGH("[AF_DBG]  focusMode=%d, focusState=%d isDepth=%d",
-             focusMode, focus_data.focus_state, focus_data.isDepth);
+    LOGH("[AF_DBG]  focusMode=%d, focusState=%d",
+             focusMode, focus_data.focus_state);
 
     switch (focusMode) {
     case CAM_FOCUS_MODE_AUTO:
@@ -6309,12 +6304,6 @@ int32_t QCamera2HardwareInterface::processAutoFocusEvent(cam_auto_focus_data_t &
         if (((focus_data.focus_state == CAM_AF_STATE_PASSIVE_FOCUSED) ||
                 (focus_data.focus_state == CAM_AF_STATE_PASSIVE_UNFOCUSED) ||
                 (focus_data.focus_state == CAM_AF_STATE_PASSIVE_SCAN)) && mActiveAF) {
-            break;
-        }
-
-        if (!bDepthAFCallbacks && focus_data.isDepth &&
-                (focus_data.focus_state == CAM_AF_STATE_PASSIVE_SCAN)) {
-            LOGD("Skip sending scan state to app, if depth focus");
             break;
         }
 
